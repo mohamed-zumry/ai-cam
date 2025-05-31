@@ -66,10 +66,12 @@
     .charts-row {
       display: flex;
       gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
     .chart {
       flex: 1;
-      height: 200px;
+      height: 250px;
       background: #ecf0f1;
       border-radius: 6px;
       display: flex;
@@ -78,6 +80,7 @@
       color: #7f8c8d;
       font-size: 16px;
       user-select: none;
+      position: relative;
     }
     .actions {
       background: #dff0d8;
@@ -105,8 +108,39 @@
       background: #1f618d;
     }
     canvas {
-      width: 100%;
-      height: 250px;
+      width: 100% !important;
+      height: 250px !important;
+      border-radius: 6px;
+      background: #ecf0f1;
+    }
+
+    /* Fixes to prevent stretching */
+    .charts-row canvas.chart {
+      max-width: 350px;     /* limit max width per chart in rows */
+      height: 250px !important;
+      aspect-ratio: 4 / 3;  /* maintain width:height ratio */
+      margin: 0 auto;
+    }
+
+    #crowdedSectionsChart {
+      max-width: 700px;     /* wider but limited width */
+      height: 300px !important;
+      display: block;
+      margin: 0 auto;
+    }
+
+    #genderPieChart {
+      max-width: 300px !important;
+      height: 300px !important;
+      aspect-ratio: 1 / 1 !important; /* keep pie chart square */
+      margin: 0 auto;
+    }
+
+    #ageBarChart {
+      max-width: 350px !important;
+      height: 250px !important;
+      aspect-ratio: 4 / 3;
+      margin: 0 auto;
     }
   </style>
 </head>
@@ -143,26 +177,25 @@
 <section>
   <h3>Visitor Trends</h3>
   <div class="charts-row">
-    <div class="chart">[Visitors Over Last 30 Days]</div>
-    <div class="chart">[Visitors Over Last 7 Days]</div>
-    <div class="chart">[Visitors Today]</div>
+    <canvas id="visitors30DaysChart" class="chart"></canvas>
+    <canvas id="visitors7DaysChart" class="chart"></canvas>
+    <canvas id="visitorsTodayChart" class="chart"></canvas>
   </div>
 </section>
 
 <section>
   <h3>Hourly Foot Traffic Heatmap</h3>
-  <div class="chart">[Heatmap Placeholder]</div>
+  <canvas id="footTrafficHeatmap" class="chart" style="height: 250px;"></canvas>
 </section>
 
 <section>
   <h3>Demographics</h3>
   <div class="charts-row">
-    <div class="chart">[Pie Chart - Gender]</div>
-    <div class="chart">[Bar Chart - Age Groups]</div>
+    <canvas id="genderPieChart" class="chart"></canvas>
+    <canvas id="ageBarChart" class="chart"></canvas>
   </div>
 </section>
 
-<!-- Real-Time Crowded Section Chart -->
 <section>
   <h3>Real-Time Crowded Sections in the Store</h3>
   <canvas id="crowdedSectionsChart"></canvas>
@@ -185,46 +218,196 @@
 <!-- Chart.js Script -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+  // Real-Time Crowded Sections Chart
   const ctx = document.getElementById('crowdedSectionsChart').getContext('2d');
-
   const crowdedSectionsChart = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: ['Kids', 'Men', 'Women', 'Toys', 'Cashier', 'Shoes'],
       datasets: [{
         label: 'Crowdedness (number of visitors)',
-        data: [50, 120, 90, 40, 150, 80], // Initial example data
-        backgroundColor: '#2980b9', 
+        data: [50, 120, 90, 40, 150, 80],
+        backgroundColor: '#2980b9',
         borderColor: '#2980b9',
         borderWidth: 1
       }]
     },
     options: {
       scales: {
-        y: {
-          beginAtZero: true
+        y: { beginAtZero: true }
+      }
+    }
+  });
+
+  // Update real-time chart every 3 seconds
+  function updateChart() {
+    const newData = [
+      Math.floor(Math.random() * 150),
+      Math.floor(Math.random() * 150),
+      Math.floor(Math.random() * 150),
+      Math.floor(Math.random() * 150),
+      Math.floor(Math.random() * 150),
+      Math.floor(Math.random() * 150),
+    ];
+    crowdedSectionsChart.data.datasets[0].data = newData;
+    crowdedSectionsChart.update();
+  }
+  setInterval(updateChart, 3000);
+
+  // Visitors Over Last 30 Days (Line Chart)
+  const ctx30 = document.getElementById('visitors30DaysChart').getContext('2d');
+  const visitors30DaysChart = new Chart(ctx30, {
+    type: 'line',
+    data: {
+      labels: Array.from({length: 30}, (_, i) => `Day ${i + 1}`),
+      datasets: [{
+        label: 'Visitors Last 30 Days',
+        data: Array.from({length: 30}, () => Math.floor(Math.random() * 300) + 100),
+        fill: false,
+        borderColor: '#2980b9',
+        tension: 0.2,
+        pointRadius: 3,
+        pointBackgroundColor: '#2980b9',
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: true } },
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+
+  // Visitors Over Last 7 Days (Line Chart)
+  const ctx7 = document.getElementById('visitors7DaysChart').getContext('2d');
+  const visitors7DaysChart = new Chart(ctx7, {
+    type: 'line',
+    data: {
+      labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      datasets: [{
+        label: 'Visitors Last 7 Days',
+        data: Array.from({length: 7}, () => Math.floor(Math.random() * 300) + 50),
+        fill: false,
+        borderColor: '#27ae60',
+        tension: 0.3,
+        pointRadius: 4,
+        pointBackgroundColor: '#27ae60',
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: true } },
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+
+  // Visitors Today (Bar Chart)
+  const ctxToday = document.getElementById('visitorsTodayChart').getContext('2d');
+  const visitorsTodayChart = new Chart(ctxToday, {
+    type: 'bar',
+    data: {
+      labels: ['6 AM', '9 AM', '12 PM', '3 PM', '6 PM', '9 PM'],
+      datasets: [{
+        label: 'Visitors Today',
+        data: [20, 45, 70, 85, 60, 30],
+        backgroundColor: '#f39c12',
+        borderColor: '#d35400',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+
+  // Hourly Foot Traffic Heatmap simulation (stacked bar chart with transparency)
+  const heatmapCtx = document.getElementById('footTrafficHeatmap').getContext('2d');
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const hours = ['12 AM', '4 AM', '8 AM', '12 PM', '4 PM', '8 PM'];
+
+  // Generate random traffic intensity (0-100) for each day/hour
+  const heatmapData = days.map(() =>
+          hours.map(() => Math.floor(Math.random() * 100))
+  );
+
+  const heatmapDatasets = days.map((day, i) => ({
+    label: day,
+    data: heatmapData[i],
+    backgroundColor: heatmapData[i].map(v => `rgba(41, 128, 185, ${v / 100})`),
+    borderWidth: 0
+  }));
+
+  const footTrafficHeatmap = new Chart(heatmapCtx, {
+    type: 'bar',
+    data: {
+      labels: hours,
+      datasets: heatmapDatasets
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { stacked: true },
+        y: { stacked: true, display: false }
+      },
+      plugins: {
+        legend: { position: 'bottom' },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}, ${ctx.label}: ${heatmapData[days.indexOf(ctx.dataset.label)][ctx.dataIndex]}`
+          }
         }
       }
     }
   });
 
-  // Function to simulate real-time data updates
-  function updateChart() {
-    const newData = [
-      Math.floor(Math.random() * 150), // Kids
-      Math.floor(Math.random() * 150), // Men
-      Math.floor(Math.random() * 150), // Women
-      Math.floor(Math.random() * 150), // Toys
-      Math.floor(Math.random() * 150), // Cashier
-      Math.floor(Math.random() * 150), // Shoes
-    ];
+  // Gender Pie Chart
+  const genderCtx = document.getElementById('genderPieChart').getContext('2d');
+  const genderPieChart = new Chart(genderCtx, {
+    type: 'pie',
+    data: {
+      labels: ['Female', 'Male'],
+      datasets: [{
+        data: [60, 40],
+        backgroundColor: ['#e91e63', '#2196f3'],
+        hoverOffset: 10
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom' } }
+    }
+  });
 
-    crowdedSectionsChart.data.datasets[0].data = newData;
-    crowdedSectionsChart.update();
-  }
-
-  // Update chart every 3 seconds
-  setInterval(updateChart, 3000);
+  // Age Groups Bar Chart
+  const ageCtx = document.getElementById('ageBarChart').getContext('2d');
+  const ageBarChart = new Chart(ageCtx, {
+    type: 'bar',
+    data: {
+      labels: ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'],
+      datasets: [{
+        label: 'Visitors by Age Group',
+        data: [50, 120, 80, 40, 30, 10],
+        backgroundColor: '#9b59b6',
+        borderColor: '#8e44ad',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
 </script>
 
 </body>
