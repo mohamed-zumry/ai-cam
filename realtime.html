@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Customer Insights Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+      color: #2c3e50;
+    }
+    select {
+      padding: 6px 10px;
+      font-size: 14px;
+    }
+    .summary-cards {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    .card {
+      background: white;
+      flex: 1;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 36px;
+      color: #2980b9;
+    }
+    .card p {
+      margin: 0;
+      font-weight: bold;
+      font-size: 14px;
+      color: #7f8c8d;
+    }
+    section {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    section h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #34495e;
+    }
+    .charts-row {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .chart {
+      width: 45%; /* Adjust to make the chart smaller */
+      height: 250px;
+      background: #ecf0f1;
+      border-radius: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #7f8c8d;
+      font-size: 16px;
+      user-select: none;
+    }
+    .actions {
+      background: #dff0d8;
+      padding: 15px;
+      border-radius: 6px;
+      color: #3c763d;
+      font-weight: bold;
+      line-height: 1.5;
+    }
+    .buttons {
+      margin-top: 15px;
+      text-align: right;
+    }
+    button {
+      background: #2980b9;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    button:hover {
+      background: #1f618d;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Cool Planet AI Insights</h1>
+  <select aria-label="Select date range">
+    <option>Last 7 Days</option>
+    <option selected>Last 30 Days</option>
+    <option>Custom Range</option>
+  </select>
+</header>
+
+<div class="summary-cards">
+  <div class="card">
+    <h2>254</h2>
+    <p>Visitors Today</p>
+  </div>
+  <div class="card">
+    <h2>5-6 PM</h2>
+    <p>Peak Hour</p>
+  </div>
+  <div class="card">
+    <h2>60% / 40%</h2>
+    <p>Female / Male</p>
+  </div>
+  <div class="card">
+    <h2>25-34</h2>
+    <p>Top Age Group</p>
+  </div>
+</div>
+
+<!-- Real-Time Crowded Sections Stacked Area Chart -->
+<section>
+  <h3>Real-Time Comparison of Crowded Sections</h3>
+  <canvas id="crowdedSectionsStackedAreaChart"></canvas>
+</section>
+
+<section class="actions">
+  <div>
+    <p>Recommendations:</p>
+    <ul>
+      <li>Schedule 2 more staff on Fridays, 4-7 PM</li>
+      <li>Consider promo targeting 25-34 age group</li>
+    </ul>
+  </div>
+  <div class="buttons">
+    <button>Export CSV</button>
+    <button>Export PDF</button>
+  </div>
+</section>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Data simulation function to create random real-time data
+  function getRandomData() {
+    return Math.floor(Math.random() * 150);
+  }
+
+  // Stacked Area Chart for Real-Time Crowded Sections (Men, Women, Kids)
+  const ctx = document.getElementById('crowdedSectionsStackedAreaChart').getContext('2d');
+  const crowdedSectionsStackedAreaChart = new Chart(ctx, {
+    type: 'line', // Using line chart for stacked effect
+    data: {
+      labels: ['0', '1', '2', '3', '4', '5'], // Time points (in seconds)
+      datasets: [{
+        label: 'Men',
+        data: [50, 120, 90, 40, 150, 80],
+        borderColor: '#2980b9',
+        backgroundColor: 'rgba(41, 128, 185, 0.2)',
+        fill: true,
+        borderWidth: 2,
+        tension: 0.4
+      }, {
+        label: 'Women',
+        data: [40, 90, 70, 100, 110, 85],
+        borderColor: '#e74c3c',
+        backgroundColor: 'rgba(231, 76, 60, 0.2)',
+        fill: true,
+        borderWidth: 2,
+        tension: 0.4
+      }, {
+        label: 'Kids',
+        data: [30, 60, 50, 20, 80, 60],
+        borderColor: '#2ecc71',
+        backgroundColor: 'rgba(46, 204, 113, 0.2)',
+        fill: true,
+        borderWidth: 2,
+        tension: 0.4
+      }]
+    },
+    options: {
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Time (in seconds)'
+          }
+        },
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Number of Visitors'
+          }
+        }
+      }
+    }
+  });
+
+  // Function to simulate real-time updates for the stacked area chart
+  function updateRealTimeData() {
+    crowdedSectionsStackedAreaChart.data.datasets[0].data.push(getRandomData()); // Men
+    crowdedSectionsStackedAreaChart.data.datasets[1].data.push(getRandomData()); // Women
+    crowdedSectionsStackedAreaChart.data.datasets[2].data.push(getRandomData()); // Kids
+
+    crowdedSectionsStackedAreaChart.data.labels.push(crowdedSectionsStackedAreaChart.data.labels.length); // Time
+
+    if (crowdedSectionsStackedAreaChart.data.labels.length > 20) {
+      crowdedSectionsStackedAreaChart.data.labels.shift();
+      crowdedSectionsStackedAreaChart.data.datasets[0].data.shift();
+      crowdedSectionsStackedAreaChart.data.datasets[1].data.shift();
+      crowdedSectionsStackedAreaChart.data.datasets[2].data.shift();
+    }
+
+    crowdedSectionsStackedAreaChart.update();
+  }
+
+  // Update chart every 3 seconds
+  setInterval(updateRealTimeData, 3000);
+</script>
+
+</body>
+</html>

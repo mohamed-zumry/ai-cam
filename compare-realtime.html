@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Customer Insights Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+      color: #2c3e50;
+    }
+    select {
+      padding: 6px 10px;
+      font-size: 14px;
+    }
+    .summary-cards {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    .card {
+      background: white;
+      flex: 1;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 36px;
+      color: #2980b9;
+    }
+    .card p {
+      margin: 0;
+      font-weight: bold;
+      font-size: 14px;
+      color: #7f8c8d;
+    }
+    section {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    section h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #34495e;
+    }
+    .charts-row {
+      display: flex;
+      gap: 20px;
+    }
+    .chart {
+      flex: 1;
+      height: 200px;
+      background: #ecf0f1;
+      border-radius: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #7f8c8d;
+      font-size: 16px;
+      user-select: none;
+    }
+    .actions {
+      background: #dff0d8;
+      padding: 15px;
+      border-radius: 6px;
+      color: #3c763d;
+      font-weight: bold;
+      line-height: 1.5;
+    }
+    .buttons {
+      margin-top: 15px;
+      text-align: right;
+    }
+    button {
+      background: #2980b9;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    button:hover {
+      background: #1f618d;
+    }
+    canvas {
+      width: 100%;
+      height: 250px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Cool Planet AI Insights</h1>
+  <select aria-label="Select date range">
+    <option>Last 7 Days</option>
+    <option selected>Last 30 Days</option>
+    <option>Custom Range</option>
+  </select>
+</header>
+
+<div class="summary-cards">
+  <div class="card">
+    <h2>254</h2>
+    <p>Visitors Today</p>
+  </div>
+  <div class="card">
+    <h2>5-6 PM</h2>
+    <p>Peak Hour</p>
+  </div>
+  <div class="card">
+    <h2>60% / 40%</h2>
+    <p>Female / Male</p>
+  </div>
+  <div class="card">
+    <h2>25-34</h2>
+    <p>Top Age Group</p>
+  </div>
+</div>
+
+<section>
+  <h3>Visitor Trends</h3>
+  <div class="charts-row">
+    <div class="chart">[Visitors Over Last 30 Days]</div>
+    <div class="chart">[Visitors Over Last 7 Days]</div>
+    <div class="chart">[Visitors Today]</div>
+  </div>
+</section>
+
+<section>
+  <h3>Hourly Foot Traffic Heatmap</h3>
+  <div class="chart">[Heatmap Placeholder]</div>
+</section>
+
+<section>
+  <h3>Demographics</h3>
+  <div class="charts-row">
+    <div class="chart">[Pie Chart - Gender]</div>
+    <div class="chart">[Bar Chart - Age Groups]</div>
+  </div>
+</section>
+
+<!-- Real-Time Crowded Section Chart -->
+<section>
+  <h3>Real-Time Crowded Sections in the Store</h3>
+  <canvas id="crowdedSectionsChart"></canvas>
+</section>
+
+<section class="actions">
+  <div>
+    <p>Recommendations:</p>
+    <ul>
+      <li>Schedule 2 more staff on Fridays, 4-7 PM</li>
+      <li>Consider promo targeting 25-34 age group</li>
+    </ul>
+  </div>
+  <div class="buttons">
+    <button>Export CSV</button>
+    <button>Export PDF</button>
+  </div>
+</section>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('crowdedSectionsChart').getContext('2d');
+
+  const crowdedSectionsChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Kids', 'Men', 'Women', 'Toys', 'Cashier', 'Shoes'],
+      datasets: [{
+        label: 'Crowdedness (number of visitors)',
+        data: [50, 120, 90, 40, 150, 80], // Initial example data
+        backgroundColor: '#2980b9', 
+        borderColor: '#2980b9',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  // Function to simulate real-time data updates
+  function updateChart() {
+    const newData = [
+      Math.floor(Math.random() * 150), // Kids
+      Math.floor(Math.random() * 150), // Men
+      Math.floor(Math.random() * 150), // Women
+      Math.floor(Math.random() * 150), // Toys
+      Math.floor(Math.random() * 150), // Cashier
+      Math.floor(Math.random() * 150), // Shoes
+    ];
+
+    crowdedSectionsChart.data.datasets[0].data = newData;
+    crowdedSectionsChart.update();
+  }
+
+  // Update chart every 3 seconds
+  setInterval(updateChart, 3000);
+</script>
+
+</body>
+</html>
